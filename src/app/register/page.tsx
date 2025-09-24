@@ -23,11 +23,24 @@ import { useForm } from "react-hook-form";
 import z from "zod/v4";
 
 // Schema de validação
-const formSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
-  passwordConfirm: z.string(),
-});
+const formSchema = z
+  .object({
+    email: z.email("E-mail inválido"),
+    password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
+    passwordConfirm: z.string(),
+  })
+  .superRefine((data, context) => {
+    // camada de validação
+    // data -> os dados validados até aquela respectiva camada
+    // context -> a adição de mensagens customizadas de validação
+    if (data.password !== data.passwordConfirm) {
+      context.addIssue({
+        code: "custom",
+        path: ["passwordConfirm"],
+        message: "A senha não confere",
+      });
+    }
+  });
 
 export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
