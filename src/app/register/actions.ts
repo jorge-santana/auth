@@ -1,5 +1,8 @@
 "use server";
 
+import z from "zod/v4";
+import { userSchema } from "./schemas";
+
 interface RegisterUserProps {
   email: string;
   password: string;
@@ -11,11 +14,20 @@ export const registerUser = async ({
   password,
   passwordConfirm,
 }: RegisterUserProps) => {
-  console.log("Chegamos no back-end");
-  console.log(">>>>>>>> ", email, password, passwordConfirm);
-  // TODO validar os parâmetros recebidos na requisição
+  const newUserValidation = userSchema.safeParse({
+    email,
+    password,
+    passwordConfirm,
+  });
 
   // TODO cadastrar o usuário no banco de dados
+
+  if (!newUserValidation.success) {
+    return {
+      success: false,
+      mensagem: "Erro na validação dos dados do usuário",
+    };
+  }
 
   return {
     success: true,

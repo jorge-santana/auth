@@ -22,30 +22,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
 import { registerUser } from "./actions";
-
-// Schema de validação
-const formSchema = z
-  .object({
-    email: z.email("E-mail inválido"),
-    password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
-    passwordConfirm: z.string(),
-  })
-  .superRefine((data, context) => {
-    // camada de validação
-    // data -> os dados validados até aquela respectiva camada
-    // context -> a adição de mensagens customizadas de validação
-    if (data.password !== data.passwordConfirm) {
-      context.addIssue({
-        code: "custom",
-        path: ["passwordConfirm"],
-        message: "A senha não confere",
-      });
-    }
-  });
+import { userSchema, UserSchema } from "./schemas";
 
 export default function Page() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UserSchema>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -53,13 +34,10 @@ export default function Page() {
     },
   });
 
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    // Será executada no envio do form, apenas se os campos forem validados com base no schema
-    console.log("Do lado do browser: ", data);
-
+  const handleSubmit = async (data: UserSchema) => {
     const response = await registerUser(data);
 
-    console.log("Resposta da server action capturada no browser: ", response);
+    console.log(response);
   };
 
   return (
