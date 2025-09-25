@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
+import { registerUser } from "./actions";
 
 // Schema de validação
 const formSchema = z
@@ -54,6 +55,11 @@ export default function Page() {
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     // Será executada no envio do form, apenas se os campos forem validados com base no schema
+    console.log("Do lado do browser: ", data);
+
+    const response = await registerUser(data);
+
+    console.log("Resposta da server action capturada no browser: ", response);
   };
 
   return (
