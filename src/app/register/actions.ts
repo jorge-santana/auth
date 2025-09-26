@@ -21,16 +21,15 @@ export const registerUser = async ({
   });
 
   // TODO cadastrar o usuário no banco de dados
-
   if (!newUserValidation.success) {
     return {
       success: false,
-      mensagem: "Erro na validação dos dados do usuário",
+      data: newUserValidation.error?.issues,
     };
   }
 
   return {
     success: true,
-    mensagem: "Usuário cadastro com sucesso",
+    data: "Usuário cadastro com sucesso",
   };
 };

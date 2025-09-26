@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import z from "zod/v4";
 import { registerUser } from "./actions";
 import { userSchema, UserSchema } from "./schemas";
+import { da } from "zod/locales";
 
 export default function Page() {
   const form = useForm<UserSchema>({
@@ -37,7 +38,15 @@ export default function Page() {
   const handleSubmit = async (data: UserSchema) => {
     const response = await registerUser(data);
 
-    console.log(response);
+    if (!response.success) {
+      if (Array.isArray(response.data)) {
+        response.data.forEach((issue) => {
+          issue.path.forEach((path) => {
+            form.setError(path as keyof UserSchema, { message: issue.message });
+          });
+        });
+      }
+    }
   };
 
   return (
