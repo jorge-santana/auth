@@ -1,7 +1,8 @@
 "use server";
 
-import z from "zod/v4";
 import { userSchema } from "./schemas";
+import { PrismaClient } from "../../../generated/prisma/client";
+import { hash } from "bcryptjs";
 
 interface RegisterUserProps {
   email: string;
@@ -20,7 +21,6 @@ export const registerUser = async ({
     passwordConfirm,
   });
 
-  // TODO cadastrar o usuário no banco de dados
   if (!newUserValidation.success) {
     return {
       success: false,
@@ -28,8 +28,16 @@ export const registerUser = async ({
     };
   }
 
+  // TODO cadastrar o usuário no banco de dados
+  const prismaClient = new PrismaClient();
+
+  const hashedPassword = await hash(password, 10);
+  const newUser = await prismaClient.user.create({
+    data: { email, password: hashedPassword },
+  });
+
   return {
     success: true,
-    data: "Usuário cadastro com sucesso",
+    data: newUser,
   };
 };
