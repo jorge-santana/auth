@@ -1,8 +1,16 @@
 "use server";
 
 import { userSchema } from "./schemas";
-import { PrismaClient } from "../../../generated/prisma/client";
+import { PrismaClient, Prisma, User } from "../../../generated/prisma/client";
 import { hash } from "bcryptjs";
+import { $ZodIssue } from "zod/v4/core";
+
+interface ActionResponse {
+  success: boolean;
+  message: string;
+  data?: User;
+  errors?: $ZodIssue[];
+}
 
 interface RegisterUserProps {
   email: string;
@@ -14,30 +22,58 @@ export const registerUser = async ({
   email,
   password,
   passwordConfirm,
-}: RegisterUserProps) => {
-  const newUserValidation = userSchema.safeParse({
-    email,
-    password,
-    passwordConfirm,
-  });
+}: RegisterUserProps): Promise<ActionResponse> => {
+  try {
+    const newUserValidation = userSchema.safeParse({
+      email,
+      password,
+      passwordConfirm,
+    });
 
-  if (!newUserValidation.success) {
+    if (!newUserValidation.success) {
+      return {
+        success: false,
+        message: "Erro na validação dos dados",
+        errors: newUserValidation.error?.issues,
+      };
+    }
+
+    // TODO cadastrar o usuário no banco de dados
+    const prismaClient = new PrismaClient();
+
+    const hashedPassword = await hash(password, 10);
+    const newUser = await prismaClient.user.create({
+      data: { email, password: hashedPassword },
+    });
+
+    return {
+      success: true,
+      message: "Conta criada com sucesso",
+      data: newUser,
+    };
+  } catch (e: unknown) {
+    console.log("########## erro capturado no catch ########");
+    console.log(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (e.code) {
+        case "P2002":
+          return {
+            success: false,
+            message: "E-mail já está em uso",
+            errors: [
+              {
+                path: ["email"],
+                message: "O e-mail informado já está em uso",
+                code: "custom",
+              },
+            ],
+          };
+      }
+    }
+
     return {
       success: false,
-      data: newUserValidation.error?.issues,
+      message: "Erro ao criar a conta",
     };
   }
-
-  // TODO cadastrar o usuário no banco de dados
-  const prismaClient = new PrismaClient();
-
-  const hashedPassword = await hash(password, 10);
-  const newUser = await prismaClient.user.create({
-    data: { email, password: hashedPassword },
-  });
-
-  return {
-    success: true,
-    data: newUser,
-  };
 };
