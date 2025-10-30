@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { registerUser } from "./actions";
 import { userSchema, UserSchema } from "./schemas";
-import { resolve } from "path";
+import Link from "next/link";
 
 export default function Page() {
   const form = useForm<UserSchema>({
@@ -58,7 +58,9 @@ export default function Page() {
             <CardTitle>Conta registrada com sucesso</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button>Login</Button>
+            <Button>
+              <Link href="/login">Login</Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
