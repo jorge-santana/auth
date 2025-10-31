@@ -17,11 +17,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginSchema, LoginSchema } from "@/validation/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 export default function Page() {
-  const form = useForm();
-  const handleSubmit = async () => {};
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const handleSubmit = async (data: LoginSchema) => {
+    console.log("Login: ", data);
+  };
   return (
     <div className="flex justify-center items-center min-h-screen">
       {" "}

@@ -1,6 +1,6 @@
 "use server";
 
-import { userSchema } from "./schemas";
+import { userSchema } from "../../validation/schemas";
 import { Prisma, User } from "../../../generated/prisma/client";
 import { hash } from "bcryptjs";
 import { $ZodIssue } from "zod/v4/core";
