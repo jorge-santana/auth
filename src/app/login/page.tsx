@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, LoginSchema } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { loginWithCredentials } from "./action";
 
 export default function Page() {
   const form = useForm<LoginSchema>({
@@ -30,7 +31,19 @@ export default function Page() {
     },
   });
   const handleSubmit = async (data: LoginSchema) => {
-    console.log("Login: ", data);
+    const response = await loginWithCredentials(data);
+
+    if (!response.success) {
+      if (Array.isArray(response.errors)) {
+        response.errors.forEach((issue) => {
+          issue.path.forEach((path) => {
+            form.setError(path as keyof LoginSchema, {
+              message: issue.message,
+            });
+          });
+        });
+      }
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-screen">
