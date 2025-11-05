@@ -1,5 +1,6 @@
 "use server";
 
+import { signIn } from "@/auth";
 import { loginSchema } from "@/validation/schemas";
 import { $ZodIssue } from "zod/v4/core";
 
@@ -32,8 +33,23 @@ export const loginWithCredentials = async ({
     };
   }
 
-  // TODO: Validação com NextAuth
-  console.log("Chegamos até aqui: ", email, password);
+  try {
+    await signIn("credentials", { email, password, redirect: false });
+  } catch (e: unknown) {
+    console.error(e);
+
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: e.message,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Erro de login",
+    };
+  }
 
   return {
     success: true,
