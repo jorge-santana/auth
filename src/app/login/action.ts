@@ -2,6 +2,7 @@
 
 import { signIn } from "@/auth";
 import { loginSchema } from "@/validation/schemas";
+import { AuthError } from "next-auth";
 import { $ZodIssue } from "zod/v4/core";
 
 interface ActionResponse {
@@ -37,6 +38,21 @@ export const loginWithCredentials = async ({
     await signIn("credentials", { email, password, redirect: false }); // NEXT_REDIRECT
   } catch (e: unknown) {
     console.error(e);
+
+    if (e instanceof AuthError) {
+      return {
+        success: false,
+        message: "Erro ao realizar o login",
+        errors: [
+          {
+            path: ["root"],
+            message: e.cause?.err?.message ?? "Erro ao realizar o login",
+            //message: "Erro ao realizar o login. Tente novamente mais tarde!",
+            code: "custom",
+          },
+        ],
+      };
+    }
 
     if (e instanceof Error) {
       return {

@@ -35,6 +35,7 @@ export default function Page() {
   const handleSubmit = async (data: LoginSchema) => {
     const response = await loginWithCredentials(data);
 
+    console.log(response);
     if (!response.success) {
       if (Array.isArray(response.errors)) {
         response.errors.forEach((issue) => {
@@ -95,6 +96,11 @@ export default function Page() {
                 />
 
                 <Button type="submit">Entrar</Button>
+                {!!form.formState.errors.root?.message && (
+                  <FormMessage>
+                    {form.formState.errors.root?.message}
+                  </FormMessage>
+                )}
               </fieldset>
             </form>
           </Form>
