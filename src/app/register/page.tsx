@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -130,6 +131,14 @@ export default function Page() {
               </form>
             </Form>
           </CardContent>
+          <CardFooter className="flex-col">
+            <div className="text-muted-foreground text-sm">
+              Já tem uma conta?{" "}
+              <Link href="/login" className="underline">
+                Entrar
+              </Link>
+            </div>
+          </CardFooter>
         </Card>
       )}
     </div>
