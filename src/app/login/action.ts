@@ -34,7 +34,7 @@ export const loginWithCredentials = async ({
   }
 
   try {
-    await signIn("credentials", { email, password, redirect: false });
+    await signIn("credentials", { email, password, redirect: false }); // NEXT_REDIRECT
   } catch (e: unknown) {
     console.error(e);
 

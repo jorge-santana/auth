@@ -21,8 +21,10 @@ import { loginSchema, LoginSchema } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginWithCredentials } from "./action";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -43,6 +45,10 @@ export default function Page() {
           });
         });
       }
+    }
+
+    if (response.success) {
+      router.push("/my-account");
     }
   };
   return (
