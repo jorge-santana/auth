@@ -1,6 +1,7 @@
 import Link from "next/link";
-import LogoutButton from "../logout-button";
+import LogoutButton from "./logout-button";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
@@ -8,7 +9,11 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  console.log("SESSION: ", session);
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <nav className="bg-gray-200 flex justify-between p-4 items-center">
