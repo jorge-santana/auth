@@ -12,23 +12,37 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  changePasswordConfirm,
-  ChangePasswordConfirm,
+  changePasswordConfirmSchema,
+  ChangePasswordConfirmSchema,
 } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { changePassword } from "./action";
 
 export default function Page() {
-  const form = useForm<ChangePasswordConfirm>({
-    resolver: zodResolver(changePasswordConfirm),
+  const form = useForm<ChangePasswordConfirmSchema>({
+    resolver: zodResolver(changePasswordConfirmSchema),
     defaultValues: {
       currentPassword: "",
       password: "",
       passwordConfirm: "",
     },
   });
-  const handleSubmit = async (data: ChangePasswordConfirm) => {
-    console.log("Enviar para server action: ", data);
+  const handleSubmit = async (data: ChangePasswordConfirmSchema) => {
+    const response = await changePassword(data);
+
+    console.log(response);
+    if (!response.success) {
+      if (Array.isArray(response.errors)) {
+        response.errors.forEach((issue) => {
+          issue.path.forEach((path) => {
+            form.setError(path as keyof ChangePasswordConfirmSchema, {
+              message: issue.message,
+            });
+          });
+        });
+      }
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-screen">

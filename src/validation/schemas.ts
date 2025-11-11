@@ -31,7 +31,7 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
-export const changePasswordConfirm = z
+export const changePasswordConfirmSchema = z
   .object({
     currentPassword: passwordSchema,
   })
@@ -39,4 +39,6 @@ export const changePasswordConfirm = z
 
 export type UserSchema = z.infer<typeof userSchema>;
 export type LoginSchema = z.infer<typeof loginSchema>;
-export type ChangePasswordConfirm = z.infer<typeof changePasswordConfirm>;
+export type ChangePasswordConfirmSchema = z.infer<
+  typeof changePasswordConfirmSchema
+>;

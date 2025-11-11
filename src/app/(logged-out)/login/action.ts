@@ -1,16 +1,9 @@
 "use server";
 
 import { signIn } from "@/auth";
+import { ActionResponse } from "@/types/action-response";
 import { loginSchema } from "@/validation/schemas";
 import { AuthError } from "next-auth";
-import { $ZodIssue } from "zod/v4/core";
-
-interface ActionResponse {
-  success: boolean;
-  message: string;
-  data?: unknown;
-  errors?: $ZodIssue[];
-}
 
 interface LoginWithCredentialsProps {
   email: string;
