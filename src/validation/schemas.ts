@@ -37,8 +37,13 @@ export const changePasswordConfirmSchema = z
   })
   .and(passwordConfirmSchema);
 
+export const resetPasswordSchema = z.object({
+  email: emailSchema,
+});
+
 export type UserSchema = z.infer<typeof userSchema>;
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type ChangePasswordConfirmSchema = z.infer<
   typeof changePasswordConfirmSchema
 >;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
