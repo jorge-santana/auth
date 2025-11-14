@@ -23,5 +23,17 @@ model User {
   twoFactorActivated Boolean  @default(false) @map("two_factor_activated")
   createdAt          DateTime @default(now()) @map("created_at")
 
+  passwordResetTokens PasswordResetToken[]
   @@map("users")
+}
+
+model PasswordResetToken {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @map("user_id") @db.Uuid
+  token              String
+  tokenExpiry        DateTime @map("token_expiry")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
