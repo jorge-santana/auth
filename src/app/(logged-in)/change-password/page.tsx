@@ -18,6 +18,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { changePassword } from "./action";
+import { toast } from "sonner";
 
 export default function Page() {
   const form = useForm<ChangePasswordConfirmSchema>({
@@ -42,6 +43,11 @@ export default function Page() {
           });
         });
       }
+    }
+
+    if (response.success) {
+      form.reset();
+      toast.success(response.message);
     }
   };
   return (
