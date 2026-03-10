@@ -42,8 +42,15 @@ export const passwordReset = async ({
   const passwordResetToken = randomBytes(32).toString("hex");
   console.log("Token de autorização para reset de senha: ", passwordResetToken);
 
+  // salvar o token
+  const tokenExpiry = new Date(Date.now() + 3600000); // 60 minutos
+  const newPasswordResetToken = await prisma.passwordResetToken.create({
+    data: { token: passwordResetToken, userId: user.id, tokenExpiry },
+  });
+
   return {
     success: true,
-    message: "Processo de reset de senha",
+    message: "Solicitação de alteração de senha iniciada com sucesso",
+    data: newPasswordResetToken,
   };
 };
