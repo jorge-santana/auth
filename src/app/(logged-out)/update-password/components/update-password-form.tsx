@@ -16,8 +16,8 @@ import {
 } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-//import { changePassword } from "./action";
-//import { toast } from "sonner";
+import { updatePassword } from "./action";
+import { toast } from "sonner";
 
 export default function UpdatePasswordForm() {
   const form = useForm<PasswordConfirmSchema>({
@@ -28,16 +28,14 @@ export default function UpdatePasswordForm() {
     },
   });
   const handleSubmit = async (data: PasswordConfirmSchema) => {
-    console.log("Data: ", data);
-    /*
-    const response = await changePassword(data);
+    const response = await updatePassword(data);
 
     console.log(response);
     if (!response.success) {
       if (Array.isArray(response.errors)) {
         response.errors.forEach((issue) => {
           issue.path.forEach((path) => {
-            form.setError(path as keyof ChangePasswordConfirmSchema, {
+            form.setError(path as keyof PasswordConfirmSchema, {
               message: issue.message,
             });
           });
@@ -47,8 +45,10 @@ export default function UpdatePasswordForm() {
 
     if (response.success) {
       form.reset();
-      toast.success(response.message);
-    }*/
+      toast.success(response.message, {
+        style: { background: "green", color: "#fff" },
+      });
+    }
   };
   return (
     <Form {...form}>
