@@ -32,10 +32,8 @@ export default function Page() {
     },
   });
   const handleSubmit = async (data: ResetPasswordSchema) => {
-    console.log(data);
     const response = await passwordReset(data);
 
-    console.log(response);
     if (!response.success) {
       if (Array.isArray(response.errors)) {
         response.errors.forEach((issue) => {

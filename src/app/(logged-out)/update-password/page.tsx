@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/client";
 import Link from "next/link";
+import UpdatePasswordForm from "./components/update-password-form";
 
 export default async function Page({
   searchParams,
@@ -13,14 +14,9 @@ export default async function Page({
   let tokenIsValid = false;
 
   if (token) {
-    //TODO: validar se o token existe no banco de dados e se está válido (não expirado)
-
-    console.log("Token: ", token);
     const passwordResetToken = await prisma.passwordResetToken.findFirst({
       where: { token },
     });
-
-    console.log("Token DB: ", passwordResetToken);
 
     if (
       passwordResetToken &&
@@ -38,7 +34,9 @@ export default async function Page({
           <CardHeader>
             <CardTitle>Atualização de senha</CardTitle>
           </CardHeader>
-          <CardContent>TODO: Formulário de atualização de senha</CardContent>
+          <CardContent>
+            <UpdatePasswordForm />
+          </CardContent>
         </Card>
       ) : (
         <Card>

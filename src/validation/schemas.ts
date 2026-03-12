@@ -47,3 +47,4 @@ export type ChangePasswordConfirmSchema = z.infer<
   typeof changePasswordConfirmSchema
 >;
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+export type PasswordConfirmSchema = z.infer<typeof passwordConfirmSchema>;
