@@ -35,7 +35,7 @@ export default async function Page({
             <CardTitle>Atualização de senha</CardTitle>
           </CardHeader>
           <CardContent>
-            <UpdatePasswordForm />
+            {token && <UpdatePasswordForm token={token} />}
           </CardContent>
         </Card>
       ) : (
