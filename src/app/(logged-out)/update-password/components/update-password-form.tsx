@@ -41,6 +41,8 @@ export default function UpdatePasswordForm({ token }: { token: string }) {
             });
           });
         });
+      } else {
+        window.location.reload();
       }
     }
 
