@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/client";
 import { ActionResponse } from "@/types/action-response";
 import { updatePasswordConfirmSchema } from "@/validation/schemas";
+import { hash } from "bcryptjs";
 
 interface UpdatePasswordProps {
   token: string;
@@ -49,13 +50,30 @@ export const updatePassword = async ({
     ) {
       tokenIsValid = true;
     }
-  }
 
-  if (!tokenIsValid) {
-    return {
-      success: false,
-      message: "Token inválido ou expirado",
-    };
+    if (!tokenIsValid) {
+      return {
+        success: false,
+        message: "Token inválido ou expirado",
+      };
+    }
+
+    const hashedPassword = await hash(password, 10);
+    const passwordUpdated = await prisma.user.update({
+      where: { id: passwordResetToken?.userId },
+      data: { password: hashedPassword },
+    });
+
+    if (!passwordUpdated) {
+      return {
+        success: false,
+        message: "Erro ao atualizar a senha do usuário",
+      };
+    }
+
+    await prisma.passwordResetToken.delete({
+      where: { id: passwordResetToken?.id },
+    });
   }
 
   return {
