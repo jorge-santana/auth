@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { updatePassword } from "./action";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function UpdatePasswordForm({ token }: { token: string }) {
   const form = useForm<UpdatePasswordConfirmSchema>({
@@ -53,7 +54,17 @@ export default function UpdatePasswordForm({ token }: { token: string }) {
       });
     }
   };
-  return (
+  return form.formState.isSubmitSuccessful ? (
+    <>
+      <p>Senha atualizada com sucesso</p>
+      <p>
+        <Link className="underline" href="/login">
+          Clique aqui
+        </Link>{" "}
+        para fazer login na sua conta.
+      </p>
+    </>
+  ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <fieldset
