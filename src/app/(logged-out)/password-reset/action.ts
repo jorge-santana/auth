@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/client";
+import { sendEmailLinkResetPassword } from "@/lib/email";
 import { ActionResponse } from "@/types/action-response";
 import { resetPasswordSchema } from "@/validation/schemas";
 import { randomBytes } from "node:crypto";
@@ -49,6 +50,9 @@ export const passwordReset = async ({
     create: { token: passwordResetToken, userId: user.id, tokenExpiry },
     update: { token: passwordResetToken, tokenExpiry },
   });
+
+  //Enviar o e-mail com o token de reset de senha para o usuário
+  await sendEmailLinkResetPassword({ to: email });
 
   return {
     success: true,
