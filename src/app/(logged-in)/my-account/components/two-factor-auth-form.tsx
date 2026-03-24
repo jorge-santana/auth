@@ -5,6 +5,13 @@ import { useState } from "react";
 import { get2faSecret } from "./actions";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 interface TwoFactorAuthFormProps {
   twoFactorActivated: boolean;
@@ -29,6 +36,11 @@ export default function TwoFactorAuthForm({
     }
   };
 
+  const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log("Disparar ação para confirmar a ativação do 2FA");
+  };
   return (
     <div>
       {isActivated && (
@@ -58,6 +70,34 @@ export default function TwoFactorAuthForm({
               <Button onClick={() => setStep(1)} variant="outline">
                 Cancelar
               </Button>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs text-muted-foreground">
+                Informe o código de verificação do seu App de Autenticação (ex.:
+                Google Authenticator, Microsoft Authenticator)
+              </p>
+              <form onSubmit={handleOTPSubmit} className="flex flex-col gap-2">
+                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+                <Button>Ativar 2FA</Button>
+                <Button variant={"outline"} onClick={() => setStep(2)}>
+                  Cancelar
+                </Button>
+              </form>
             </div>
           )}
         </div>
