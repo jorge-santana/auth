@@ -66,12 +66,11 @@ export const activate2fa = async (token: string) => {
     };
   }
 
-  let twoFactorSecret = user.twoFactorSecret;
+  const twoFactorSecret = user.twoFactorSecret;
 
   if (twoFactorSecret) {
     const tokenValid = await verify({ secret: twoFactorSecret, token });
 
-    console.log("tokenValid: ", tokenValid);
     if (!tokenValid.valid) {
       return {
         message: "OTP é inválido",

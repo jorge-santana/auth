@@ -42,7 +42,19 @@ export default function TwoFactorAuthForm({
 
     const response = await activate2fa(otp);
 
-    console.log("Resposta: ", response);
+    if (!response?.success) {
+      toast.error(response?.message, {
+        style: { background: "red", color: "white" },
+      });
+    }
+
+    if (response?.success) {
+      toast.success(response?.message, {
+        style: { background: "green", color: "white" },
+      });
+
+      setIsActivated(true);
+    }
   };
   return (
     <div>
@@ -101,7 +113,7 @@ export default function TwoFactorAuthForm({
                     <InputOTPSlot index={5} />
                   </InputOTPGroup>
                 </InputOTP>
-                <Button>Ativar 2FA</Button>
+                <Button disabled={otp.length !== 6}>Ativar 2FA</Button>
                 <Button variant={"outline"} onClick={() => setStep(2)}>
                   Cancelar
                 </Button>
