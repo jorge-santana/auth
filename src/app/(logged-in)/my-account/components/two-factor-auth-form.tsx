@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { get2faSecret } from "./actions";
+import { activate2fa, get2faSecret } from "./actions";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -23,6 +23,7 @@ export default function TwoFactorAuthForm({
   const [isActivated, setIsActivated] = useState(twoFactorActivated);
   const [code, setCode] = useState("");
   const [step, setStep] = useState(1);
+  const [otp, setOtp] = useState("");
 
   const handleEnableClick = async () => {
     const response = await get2faSecret();
@@ -39,7 +40,9 @@ export default function TwoFactorAuthForm({
   const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Disparar ação para confirmar a ativação do 2FA");
+    const response = await activate2fa(otp);
+
+    console.log("Resposta: ", response);
   };
   return (
     <div>
@@ -80,7 +83,12 @@ export default function TwoFactorAuthForm({
                 Google Authenticator, Microsoft Authenticator)
               </p>
               <form onSubmit={handleOTPSubmit} className="flex flex-col gap-2">
-                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+                <InputOTP
+                  maxLength={6}
+                  pattern={REGEXP_ONLY_DIGITS}
+                  value={otp}
+                  onChange={setOtp}
+                >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
