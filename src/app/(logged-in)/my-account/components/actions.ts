@@ -89,3 +89,24 @@ export const activate2fa = async (token: string) => {
     };
   }
 };
+
+export const disable2fa = async () => {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return {
+      message: "Não autorizado",
+      success: false,
+    };
+  }
+
+  await prisma.user.update({
+    where: { id: session?.user?.id },
+    data: { twoFactorActivated: false },
+  });
+
+  return {
+    message: "2FA desativado com sucesso",
+    success: true,
+  };
+};

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { activate2fa, get2faSecret } from "./actions";
+import { activate2fa, disable2fa, get2faSecret } from "./actions";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -56,11 +56,30 @@ export default function TwoFactorAuthForm({
       setIsActivated(true);
     }
   };
+
+  const handleDisable2faClick = async () => {
+    const response = await disable2fa();
+
+    if (!response?.success) {
+      toast.error(response?.message, {
+        style: { background: "red", color: "white" },
+      });
+    }
+
+    if (response?.success) {
+      toast.success(response?.message, {
+        style: { background: "green", color: "white" },
+      });
+
+      setIsActivated(false);
+    }
+  };
+
   return (
     <div>
       {isActivated && (
         <div>
-          <Button variant={"destructive"}>
+          <Button onClick={handleDisable2faClick} variant={"destructive"}>
             Desabilitar autenticação de dois fatores
           </Button>
         </div>
