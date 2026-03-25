@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, LoginSchema } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { loginWithCredentials } from "./action";
+import { loginWithCredentials, preLoginCheck } from "./action";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -35,23 +35,39 @@ export default function Page() {
     },
   });
   const handleSubmit = async (data: LoginSchema) => {
-    const response = await loginWithCredentials(data);
+    // TODO: verificar se o usuário possui o 2FA true
+    const preLoginCheckResponse = await preLoginCheck(data);
 
-    console.log(response);
-    if (!response.success) {
-      if (Array.isArray(response.errors)) {
-        response.errors.forEach((issue) => {
-          issue.path.forEach((path) => {
-            form.setError(path as keyof LoginSchema, {
-              message: issue.message,
-            });
-          });
-        });
-      }
+    if (!preLoginCheckResponse.success) {
+      form.setError("root" as keyof LoginSchema, {
+        message: preLoginCheckResponse.message,
+      });
     }
 
-    if (response.success) {
-      router.push("/my-account");
+    const twoFactorActivated = (
+      preLoginCheckResponse?.data as { twoFactorActivated?: boolean }
+    )?.twoFactorActivated;
+
+    if (twoFactorActivated) {
+      // TODO: exibir o formulário para inserir o OTP
+      console.log("exibir o formulário para inserir o OTP");
+    } else {
+      const response = await loginWithCredentials(data);
+      if (!response.success) {
+        if (Array.isArray(response.errors)) {
+          response.errors.forEach((issue) => {
+            issue.path.forEach((path) => {
+              form.setError(path as keyof LoginSchema, {
+                message: issue.message,
+              });
+            });
+          });
+        }
+      }
+
+      if (response.success) {
+        router.push("/my-account");
+      }
     }
   };
   return (

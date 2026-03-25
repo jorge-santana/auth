@@ -1,8 +1,10 @@
 "use server";
 
 import { signIn } from "@/auth";
+import { prisma } from "@/lib/client";
 import { ActionResponse } from "@/types/action-response";
 import { loginSchema } from "@/validation/schemas";
+import { compare } from "bcryptjs";
 import { AuthError } from "next-auth";
 
 interface LoginWithCredentialsProps {
@@ -63,5 +65,41 @@ export const loginWithCredentials = async ({
   return {
     success: true,
     message: "Login realizado com sucesso",
+  };
+};
+
+export const preLoginCheck = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}): Promise<ActionResponse> => {
+  // Validar o usuário no banco (autenticação)
+
+  const user = await prisma.user.findUnique({
+    where: { email: email as string },
+  });
+
+  if (!user) {
+    return {
+      success: false,
+      message: "Usuário e ou senha inválido(s)",
+    };
+  }
+
+  const isPasswordValid = await compare(password as string, user.password);
+
+  if (!isPasswordValid) {
+    return {
+      success: false,
+      message: "Usuário e ou senha inválido(s)",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Autenticação confirmada",
+    data: { twoFactorActivated: user.twoFactorActivated },
   };
 };
