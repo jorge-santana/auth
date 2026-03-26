@@ -10,11 +10,13 @@ import { AuthError } from "next-auth";
 interface LoginWithCredentialsProps {
   email: string;
   password: string;
+  token?: string;
 }
 
 export const loginWithCredentials = async ({
   email,
   password,
+  token,
 }: LoginWithCredentialsProps): Promise<ActionResponse> => {
   const loginValidation = loginSchema.safeParse({
     email,
@@ -30,7 +32,7 @@ export const loginWithCredentials = async ({
   }
 
   try {
-    await signIn("credentials", { email, password, redirect: false }); // NEXT_REDIRECT
+    await signIn("credentials", { email, password, token, redirect: false }); // NEXT_REDIRECT
   } catch (e: unknown) {
     console.error(e);
 

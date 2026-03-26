@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "./lib/client";
 import { compare } from "bcryptjs";
+import { verify } from "otplib";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -9,6 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        token: {},
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -25,11 +27,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const isPasswordValid = await compare(
           credentials.password as string,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
           throw new Error("Senha incorreta");
+        }
+
+        // validar o otp se 2fa for true
+
+        const twoFactorActivated = user.twoFactorActivated;
+
+        if (twoFactorActivated) {
+          const twoFactorSecret = user.twoFactorSecret;
+          const tokenValid = await verify({
+            secret: twoFactorSecret as string,
+            token: credentials.token as string,
+          });
+
+          if (!tokenValid.valid) {
+            throw new Error("OTP inválido");
+          }
         }
 
         return {

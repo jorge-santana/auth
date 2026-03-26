@@ -32,6 +32,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { toast } from "sonner";
 
 export default function Page() {
   const [step, setStep] = useState(1);
@@ -60,8 +61,6 @@ export default function Page() {
     )?.twoFactorActivated;
 
     if (twoFactorActivated) {
-      // TODO: exibir o formulário para inserir o OTP
-      console.log("exibir o formulário para inserir o OTP");
       setStep(2);
     } else {
       const response = await loginWithCredentials(data);
@@ -85,9 +84,26 @@ export default function Page() {
 
   const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(
-      "Acionar a server action para validar o OTP e seguir ou não com o fluxo de login",
-    );
+
+    const data = {
+      email: form.getValues("email"),
+      password: form.getValues("password"),
+      token: otp,
+    };
+    const response = await loginWithCredentials(data);
+
+    if (!response.success) {
+      toast.error(response.message, {
+        style: { background: "red", color: "white" },
+      });
+    }
+
+    if (response.success) {
+      toast.success(response.message, {
+        style: { background: "green", color: "white" },
+      });
+      router.push("/my-account");
+    }
   };
 
   return (
